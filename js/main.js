@@ -5,7 +5,7 @@ import {
     updateScore
 } from './functions.js';
 
-// recuperation elements du DOM
+// recup. elements du DOM
 const startButton = document.getElementById('btn-start');
 const restartButton = document.getElementById('btn-restart');
 const containerQuiz = document.getElementById('quiz-screen');
@@ -15,25 +15,27 @@ const submitButton = document.getElementById('submit-btn');
 const containerResult = document.getElementById('result-screen');
 const scoreResult = document.getElementById('score');
 
-// variables relative au quiz
+// variables relatives au quiz
 let questionIndex = 0;
 let score = 0;
 let choiceSelected = null;
 
-// màj de la variables choiceSelected
+// màj variable choiceSelected
 function setChoiceSelected(index) {
     choiceSelected = index;
 }
 
-// ecoute au clic sur le button "commencer le quiz"
-startButton.addEventListener('click', () => {
+// ecoute du clic sur le bouton "Commencer le quiz"
+startButton?.addEventListener('click', () => {
     containerStart.classList.add('hidden');
     containerQuiz.classList.remove('hidden');
     showQuestion(questionIndex, setChoiceSelected);
 });
 
-// ecoute au clic sur le button "suivant"
-nextButton.addEventListener('click', () => {
+// ecoute du clic sur le bouton "Suivant"
+nextButton?.addEventListener('click', () => {
+    if (choiceSelected === null) return;
+
     score += updateScore(choiceSelected, questionIndex);
     questionIndex++;
     choiceSelected = null;
@@ -43,40 +45,33 @@ nextButton.addEventListener('click', () => {
     } else {
         containerQuiz.classList.add('hidden');
         containerResult.classList.remove('hidden');
-        scoreResult.textContent = score;
+        scoreResult.textContent = `${score} / ${questions.length}`;
         restartButton.classList.remove('hidden');
     }
 });
 
-// ecoute au clic sur le button "valider"
-submitButton.addEventListener('click', () => {
+// ecoute du clic sur le bouton "valider"
+submitButton?.addEventListener('click', () => {
+    if (choiceSelected === null) return;
+
     const result = updateScore(choiceSelected, questionIndex);
+    score += result;
+    questionIndex++;
+    choiceSelected = null;
 
-    if (result === 1) {
-        score += result;
-        questionIndex++;
-        choiceSelected = null;
-
-        if (questionIndex < questions.length) {
-            showQuestion(questionIndex, setChoiceSelected);
-        } else {
-            containerQuiz.classList.add('hidden');
-            containerResult.classList.remove('hidden');
-            scoreResult.textContent = score;
-            restartButton.classList.remove('hidden');
-        }
-    }
-    else {
-        // reponse incorrecte => fin du quiz => possibilite de restart
+    if (result === 1 && questionIndex < questions.length) {
+        showQuestion(questionIndex, setChoiceSelected);
+    } else {
+        // fin du quiz (bonne ou mauvaise réponse)
         containerQuiz.classList.add('hidden');
         containerResult.classList.remove('hidden');
-        scoreResult.textContent = score;
+        scoreResult.textContent = `${score} / ${questions.length}`;
         restartButton.classList.remove('hidden');
     }
 });
 
-// ecoute au clic sur le button "recommencer"
-restartButton.addEventListener('click', () => {
+// ecoute du clic sur le bouton "recommencer"
+restartButton?.addEventListener('click', () => {
     questionIndex = 0;
     score = 0;
     choiceSelected = null;
@@ -84,4 +79,3 @@ restartButton.addEventListener('click', () => {
     containerQuiz.classList.remove('hidden');
     showQuestion(questionIndex, setChoiceSelected);
 });
-
